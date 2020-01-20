@@ -1,21 +1,35 @@
-import React, {Component} from 'react';
-import { ListGroup, ListGroupItem, Row, Button, Col } from 'reactstrap';
+import React, {Fragment, Component} from "react";
+import {ListGroup, ListGroupItem} from "reactstrap";
+
+import ItemForm from "./ItemForm";
+import Item from "./Item";
 
 class ItemsList extends Component {
   state = {
     items: [{
+      reference: 13456,
       title: "Casio Watch",
       price: 67.60
     }],
     query: "",
   };
 
-  handleAddItem = (item) => {
-    this.setState(({items, ...prev}) => ({ ...prev, items: [...items, item] }));
+  addItem = (item) => {
+    console.log(item);
+    
+    this.setState(({items, ...prev}) => {
+      const reference = Math.floor(Math.random() * 1e3);
+      return {
+        items: [
+          ...items, {...item, reference},
+        ],
+      };
+    });
   };
 
-  deleteItem = (index) => {
+  deleteItem = (item) => {
     const {items} = this.state;
+    const index   = items.findIndex(({reference}) => reference === item.reference);
     
     items.splice(index, 1);
     this.setState({items});
@@ -24,21 +38,15 @@ class ItemsList extends Component {
   render() {
     const {items} = this.state;
     return (
-      <ListGroup>
-      {items.map(({title, price}, index) => 
-<ListGroupItem tag="div" key={index}>
-<Row className="item-container">
-<Col className="item-title-container" xs={10}>
-<p className="item-title">{title}<br/>$ {price}</p>
-</Col>
-<Col className="item-button-container" xs={2}>
-<Button onClick={() => this.deleteItem(index)} color="link">
-Remove
-</Button>
-</Col>
-</Row>
-</ListGroupItem>)}
-</ListGroup>
+      <Fragment>
+        <ItemForm onSubmit={this.addItem}/>
+        <ListGroup>
+          {items.map((item, index) => 
+            <ListGroupItem tag="div" key={index}>
+              <Item onDelete={this.deleteItem}{...{item}}/>
+            </ListGroupItem>)}
+        </ListGroup>
+      </Fragment>
     );
   }
 }
