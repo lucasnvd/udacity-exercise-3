@@ -1,52 +1,52 @@
-import React, {Fragment, Component} from "react";
-import {ListGroup, ListGroupItem} from "reactstrap";
+import React, {PureComponent} from "react";
+import {ListGroup, ListGroupItem, Button, Alert, Row, Col} from "reactstrap";
+import PropTypes from "prop-types";
 
-import ItemForm from "./ItemForm";
-import Item from "./Item";
-
-class ItemsList extends Component {
-  state = {
-    items: [{
-      reference: 13456,
-      title: "Casio Watch",
-      price: 67.60
-    }],
-    query: "",
-  };
-
-  addItem = (item) => {
-    console.log(item);
-    
-    this.setState(({items, ...prev}) => {
-      const reference = Math.floor(Math.random() * 1e3);
-      return {
-        items: [
-          ...items, {...item, reference},
-        ],
-      };
-    });
-  };
-
-  deleteItem = (item) => {
-    const {items} = this.state;
-    const index   = items.findIndex(({reference}) => reference === item.reference);
-    
-    items.splice(index, 1);
-    this.setState({items});
-  };
-
-  render() {
-    const {items} = this.state;
+class NoItemsAlert extends PureComponent {
+  render () {
     return (
-      <Fragment>
-        <ItemForm onSubmit={this.addItem}/>
-        <ListGroup>
-          {items.map((item, index) => 
-            <ListGroupItem tag="div" key={index}>
-              <Item onDelete={this.deleteItem}{...{item}}/>
-            </ListGroupItem>)}
-        </ListGroup>
-      </Fragment>
+      <Alert color="danger">
+        Ops, items not found.<br/>
+        <small>You probably didn't add any item, use the form above to insert some items.</small>
+      </Alert>
+    );
+  }
+}
+
+class ItemsList extends PureComponent {
+  static propTypes = {
+    onDelete: PropTypes.func.isRequired,
+    items: (
+      PropTypes.arrayOf(
+        PropTypes.shape({
+          reference: PropTypes.number.isRequired,
+          title: PropTypes.string.isRequired,
+          price: PropTypes.number.isRequired,
+        })
+      ).isRequired
+    ),
+  };
+  render() {
+    const {onDelete, items} = this.props;
+    return (
+      <div className="list-container">
+        {items.length === 0 
+          ? <NoItemsAlert/>
+          :
+          <ListGroup>
+            {items.map((item, index) => 
+              <ListGroupItem tag="div" key={index}>
+                <Row className="item-container">
+                  <Col className="item-title-container" xs={10}>
+                    <p className="item-title">{item.title}<br/>$ {item.price}</p>
+                  </Col>
+                  <Col className="item-button-container" xs={2}>
+                    <Button onClick={() => onDelete(item)} color="link">Remove</Button>
+                  </Col>
+                </Row>
+              </ListGroupItem>)}
+          </ListGroup>}
+      </div>
     );
   }
 }

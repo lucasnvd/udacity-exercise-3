@@ -5,6 +5,10 @@ body {
   color: #3692bc;
 }
 
+div.list-container {
+  margin-top: 25px; 
+}
+
 div.item-container > div.item-title-container {
   display: flex;
   align-items: center;

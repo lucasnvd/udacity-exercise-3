@@ -1,15 +1,10 @@
 import React, {PureComponent} from 'react';
-import {Container} from "reactstrap";
 
-import ItemsList from "./ItemsList";
+import ItemsListContainer from "./ItemsListContainer";
 
 class App extends PureComponent {
   render () {
-     return (
-       <Container>
-         <ItemsList/>
-       </Container>
-     );
+    return <ItemsListContainer/>;
   }
 }
 
